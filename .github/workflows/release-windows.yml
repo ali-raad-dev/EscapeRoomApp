@@ -46,6 +46,12 @@ jobs:
           if (Test-Path .\EscapeRoomApp.zip) { Remove-Item .\EscapeRoomApp.zip }
           Compress-Archive -Path .\dist\* -DestinationPath .\EscapeRoomApp.zip -Force
 
+      - name: Upload artifact (fallback)
+        uses: actions/upload-artifact@v4
+        with:
+          name: EscapeRoomApp
+          path: EscapeRoomApp.zip
+
       - name: Create GitHub Release
         id: create_release
         uses: actions/create-release@v1
