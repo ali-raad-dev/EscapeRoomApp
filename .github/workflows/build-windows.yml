@@ -31,11 +31,18 @@ jobs:
       - name: Build web app
         run: npm run build
 
-      - name: Package Electron app (Windows)
-        run: npm run electron:build
+      - name: Create self-extracting 7z installer
+        shell: pwsh
+        run: |
+          Set-Location ${{ github.workspace }}
+          npm run build
+          # create a 7z archive of the dist folder
+          7z a -t7z EscapeRoomApp.7z .\dist\*
+          # create an SFX exe from the 7z archive
+          7z a -sfx EscapeRoomApp-Setup.exe EscapeRoomApp.7z
 
       - name: Upload installer artifact
         uses: actions/upload-artifact@v4
         with:
           name: windows-installer
-          path: dist/**
+          path: EscapeRoomApp-Setup.exe

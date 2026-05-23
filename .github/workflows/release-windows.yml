@@ -23,8 +23,13 @@ jobs:
       - name: Build web app
         run: npm run build
 
-      - name: Package Electron app (Windows)
-        run: npm run electron:build
+      - name: Create self-extracting 7z installer
+        shell: pwsh
+        run: |
+          Set-Location ${{ github.workspace }}
+          npm run build
+          7z a -t7z EscapeRoomApp.7z .\dist\*
+          7z a -sfx EscapeRoomApp-Setup.exe EscapeRoomApp.7z
 
       - name: Create Release
         id: create_release
@@ -38,6 +43,6 @@ jobs:
         uses: softprops/action-gh-release@v1
         with:
           files: |
-            dist/**
+            EscapeRoomApp-Setup.exe
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
