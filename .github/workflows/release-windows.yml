@@ -52,6 +52,29 @@ jobs:
           name: EscapeRoomApp
           path: EscapeRoomApp.zip
 
+      - name: Install Inno Setup (choco)
+        shell: pwsh
+        run: |
+          choco install innosetup -y
+
+      - name: Compile Inno Setup installer
+        shell: pwsh
+        run: |
+          $iss = Join-Path ${{ github.workspace }} 'EscapeRoomInstaller.iss'
+          $iscc = 'C:\Program Files (x86)\Inno Setup 6\ISCC.exe'
+          if (Test-Path $iscc) {
+            & $iscc $iss
+          } else {
+            Write-Error "ISCC.exe not found at $iscc"
+            exit 1
+          }
+
+      - name: Upload Inno Setup installer artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: EscapeRoomControlSetup
+          path: EscapeRoomControlSetup.exe
+
       - name: Create GitHub Release
         id: create_release
         uses: actions/create-release@v1
