@@ -33,30 +33,19 @@ jobs:
       - name: Build web app
         run: npm run build
 
-      - name: Install 7-Zip
-        shell: pwsh
-        run: |
-          choco install 7zip -y
-
-      - name: Diagnose 7z and environment
-        shell: pwsh
-        run: |
-          Write-Host "PATH=$env:PATH"
-          choco --version || Write-Host "choco not found"
-          $seven = Get-Command 7z -ErrorAction SilentlyContinue
-          if ($seven) { Write-Host "7z found: $($seven.Source)" } else { Write-Host "7z not found in PATH" }
-          npm --version
-          node --version
-
-      - name: Create self-extracting 7z installer
+      - name: Build and package dist zip
         shell: pwsh
         run: |
           Set-Location ${{ github.workspace }}
           npm run build
-          $seven = (Get-Command 7z -ErrorAction SilentlyContinue).Source
-          if (-not $seven) { Write-Error "7z executable not found; aborting"; exit 1 }
-          & $seven a -t7z EscapeRoomApp.7z .\dist\*
-          & $seven a -sfx EscapeRoomApp-Setup.exe EscapeRoomApp.7z
+          if (Test-Path .\EscapeRoomApp.zip) { Remove-Item .\EscapeRoomApp.zip }
+          Compress-Archive -Path .\dist\* -DestinationPath .\EscapeRoomApp.zip -Force
+
+      - name: Upload package artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: windows-installer-zip
+          path: EscapeRoomApp.zip
 
       - name: Upload installer artifact
         uses: actions/upload-artifact@v4
