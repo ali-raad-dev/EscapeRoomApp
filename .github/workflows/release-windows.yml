@@ -32,8 +32,8 @@ jobs:
           Write-Host "Listing workspace files:"
           Get-ChildItem -Force -File -Recurse -Depth 1 | Select-Object -First 50 | ForEach-Object { Write-Host $_.FullName }
 
-      - name: Install dependencies
-        run: npm ci
+      - name: Install dependencies (skip install scripts to avoid native binary downloads)
+        run: npm ci --ignore-scripts
 
       - name: Build web app
         run: npm run build
