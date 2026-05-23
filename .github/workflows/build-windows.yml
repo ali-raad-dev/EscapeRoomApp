@@ -31,6 +31,11 @@ jobs:
       - name: Build web app
         run: npm run build
 
+      - name: Install 7-Zip
+        shell: pwsh
+        run: |
+          choco install 7zip -y
+
       - name: Create self-extracting 7z installer
         shell: pwsh
         run: |
