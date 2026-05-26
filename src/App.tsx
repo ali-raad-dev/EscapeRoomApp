@@ -42,6 +42,12 @@ type TemporaryDisplayState =
   | { kind: 'warning'; text: string }
   | null;
 
+type DesktopApi = {
+  openDisplayWindow?: () => void;
+  toggleDisplayFullscreen?: () => void;
+  setDisplayFullscreen?: (nextFullscreen: boolean) => void;
+};
+
 type DisplayMessage =
   | { type: 'custom-hint'; hint: CustomHintDraft; consumes: boolean }
   | { type: 'warning'; text: string }
@@ -277,6 +283,7 @@ function App() {
   const [session, setSession] = useRoomSession();
   const [temporaryDisplay] = useTemporaryDisplay();
   const now = useNow();
+  const desktopApi = (window as Window & { escapeRoom?: DesktopApi }).escapeRoom;
   const hash = window.location.hash.toLowerCase();
   const screen = hash.includes('display') ? 'display' : hash.includes('control') ? 'control' : 'home';
   const effectiveSession = useMemo(() => deriveState(session, now), [session, now]);
@@ -295,13 +302,21 @@ function App() {
   };
 
   const openDisplay = () => {
-    const desktopApi = (window as Window & { escapeRoom?: { openDisplayWindow?: () => void } }).escapeRoom;
     if (desktopApi?.openDisplayWindow) {
       desktopApi.openDisplayWindow();
       return;
     }
 
     window.open(`${window.location.pathname}#/display`, '_blank', 'noopener,noreferrer');
+  };
+
+  const fullscreenDisplay = () => {
+    if (desktopApi?.toggleDisplayFullscreen) {
+      desktopApi.toggleDisplayFullscreen();
+      return;
+    }
+
+    openDisplay();
   };
 
   const activeTemplate = templates[0] ?? null;
@@ -318,6 +333,7 @@ function App() {
           now={now}
           dispatch={(action) => setSession((current) => reducer(current, action))}
           openDisplay={openDisplay}
+          fullscreenDisplay={fullscreenDisplay}
           backToTemplates={() => {
             window.location.hash = '#/home';
           }}
@@ -578,6 +594,7 @@ function ControlRoom({
   now,
   dispatch,
   openDisplay,
+  fullscreenDisplay,
   backToTemplates,
 }: {
   state: EscapeRoomState;
@@ -586,6 +603,7 @@ function ControlRoom({
   now: number;
   dispatch: Dispatch<Action>;
   openDisplay: () => void;
+  fullscreenDisplay: () => void;
   backToTemplates: () => void;
 }) {
   const remainingLabel = formatClock(state.remainingSeconds);
@@ -662,6 +680,9 @@ function ControlRoom({
             <button className="ghost-button" type="button" onClick={openDisplay}>
               Open display
             </button>
+            <button className="ghost-button" type="button" onClick={fullscreenDisplay}>
+              Fullscreen display
+            </button>
             <button
               className="ghost-button"
               type="button"
@@ -702,20 +723,20 @@ function ControlRoom({
           </button>
         </div>
 
-        <div className="adjust-grid">
-          <button className="chip-button" type="button" onClick={() => dispatch({ type: 'adjust-time', deltaSeconds: -60, now })}>
-            -1 min
-          </button>
-          <button className="chip-button" type="button" onClick={() => dispatch({ type: 'adjust-time', deltaSeconds: -300, now })}>
-            -5 min
-          </button>
-          <button className="chip-button" type="button" onClick={() => dispatch({ type: 'adjust-time', deltaSeconds: 60, now })}>
-            +1 min
-          </button>
-          <button className="chip-button" type="button" onClick={() => dispatch({ type: 'adjust-time', deltaSeconds: 300, now })}>
-            +5 min
-          </button>
-        </div>
+          <div className="adjust-grid">
+            <button className="chip-button" type="button" onClick={() => dispatch({ type: 'adjust-time', deltaSeconds: -300, now })}>
+              -5 min
+            </button>
+            <button className="chip-button" type="button" onClick={() => dispatch({ type: 'adjust-time', deltaSeconds: -60, now })}>
+              -1 min
+            </button>
+            <button className="chip-button" type="button" onClick={() => dispatch({ type: 'adjust-time', deltaSeconds: 60, now })}>
+              +1 min
+            </button>
+            <button className="chip-button" type="button" onClick={() => dispatch({ type: 'adjust-time', deltaSeconds: 300, now })}>
+              +5 min
+            </button>
+          </div>
 
         <div className="tempo-row">
           <div className="field-label">Tempo</div>

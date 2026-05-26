@@ -18,6 +18,24 @@ npm install
 npm run app
 ```
 
+## Packaging (Desktop app)
+
+To run the Electron app in development (opens the app shell around the dev server):
+
+```bash
+npm install
+npm run electron:dev
+```
+
+To build a distributable installer for Windows (uses `electron-builder` / NSIS):
+
+```bash
+npm install
+npm run electron:build
+```
+
+Notes: building produces an installer under the `dist` or `dist/win-unpacked` output; run the generated installer on a Windows machine.
+
 ## Features
 
 - Live countdown timer with pause, resume, reset, and time adjustment controls
@@ -29,5 +47,6 @@ npm run app
 
 ## Updates
 
+- Added an operator fullscreen control for the live display window so the second screen can be toggled into fullscreen from the control panel.
 - Added a template landing page so you can choose or edit a room before opening the live control screen.
 - Updated hint flow: show-hint no longer resets the timer, reset now clears the active hint and restores the player hint limit, operator hints are saved locally and can be added without a fixed cap, custom hints can be pushed to the display without being saved, and a red warning mode can overlay the display with optional text.

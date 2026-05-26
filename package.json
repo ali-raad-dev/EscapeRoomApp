@@ -3,7 +3,7 @@
   "private": true,
   "version": "0.1.0",
   "type": "module",
-  "main": "electron-main.js",
+  "main": "electron-main.cjs",
   "scripts": {
     "dev": "vite",
     "app": "powershell -ExecutionPolicy Bypass -File .\\launch-desktop.ps1",
@@ -21,11 +21,12 @@
     "@types/react": "^18.3.12",
     "@types/react-dom": "^18.3.1",
     "@vitejs/plugin-react": "^4.3.3",
-    "typescript": "^5.5.4",
-    "vite": "^5.4.8",
+    "cross-env": "^7.0.3",
     "electron": "^26.0.0",
     "electron-builder": "^24.6.0",
-    "cross-env": "^7.0.3"
+    "electron-packager": "^17.1.2",
+    "typescript": "^5.5.4",
+    "vite": "^5.4.8"
   },
   "build": {
     "appId": "com.championtracker.escape-room",
@@ -34,13 +35,18 @@
       "dist/**/*",
       "node_modules/**/*",
       "package.json",
-      "electron-main.js"
+      "electron-main.js",
+      "electron-main.cjs",
+      "electron-preload.cjs"
     ],
     "directories": {
       "buildResources": "build"
     },
     "win": {
-      "target": ["nsis"]
+      "target": [
+        "nsis"
+      ],
+      "sign": false
     }
   }
 }
