@@ -40,8 +40,8 @@ Notes: building produces an installer under the `dist` or `dist/win-unpacked` ou
 
 - Live countdown timer with pause, resume, reset, and time adjustment controls
 - Operator-only hint reveals with optional hint-use consumption
-- Three fixed hint slots with editing controls
-- Shared state persistence across windows through local storage
+- Three fixed clue slots with editing controls
+- Shared session persistence across windows through local storage, with room templates saved in SQLite
 - Dedicated operator dashboard and full-screen room display mode
 - Desktop launcher that opens the control panel and display in app-style windows
 
@@ -50,3 +50,4 @@ Notes: building produces an installer under the `dist` or `dist/win-unpacked` ou
 - Added an operator fullscreen control for the live display window so the second screen can be toggled into fullscreen from the control panel.
 - Added a template landing page so you can choose or edit a room before opening the live control screen.
 - Updated hint flow: show-hint no longer resets the timer, reset now clears the active hint and restores the player hint limit, operator hints are saved locally and can be added without a fixed cap, custom hints can be pushed to the display without being saved, and a red warning mode can overlay the display with optional text.
+- Removed hint titles from room clues, enlarged the clue text in the editor and display, and moved room template persistence into SQLite so edits save reliably across app restarts.

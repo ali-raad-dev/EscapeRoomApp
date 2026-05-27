@@ -2,7 +2,6 @@ export type RoomStatus = 'idle' | 'running' | 'paused' | 'completed';
 
 export type Hint = {
   id: string;
-  title: string;
   body: string;
 };
 
@@ -37,9 +36,9 @@ export const DEFAULT_STATE: EscapeRoomState = {
   status: 'idle',
   timeScale: 1,
   hints: [
-    { id: 'hint-1', title: 'Hint 1', body: 'Replace this clue with the first hint.' },
-    { id: 'hint-2', title: 'Hint 2', body: 'Replace this clue with the second hint.' },
-    { id: 'hint-3', title: 'Hint 3', body: 'Replace this clue with the third hint.' },
+    { id: 'hint-1', body: 'Replace this clue with the first hint.' },
+    { id: 'hint-2', body: 'Replace this clue with the second hint.' },
+    { id: 'hint-3', body: 'Replace this clue with the third hint.' },
   ],
   activeHintId: null,
   hintsRemaining: PLAYER_HINT_LIMIT,
@@ -52,9 +51,9 @@ export const DEFAULT_TEMPLATES: RoomTemplate[] = [
     name: 'The Locked Archive',
     durationSeconds: 60 * 60,
     hints: [
-      { id: 'hint-1', title: 'Start with the bookshelves', body: 'The sequence is hidden where the dusty spines do not quite line up.' },
-      { id: 'hint-2', title: 'The key is not locked away', body: 'Check below the metal desk drawer, then follow the numbers on the tag.' },
-      { id: 'hint-3', title: 'Final step', body: 'The code is the year the archive was rebuilt, but read the digits backward.' },
+      { id: 'hint-1', body: 'The sequence is hidden where the dusty spines do not quite line up.' },
+      { id: 'hint-2', body: 'Check below the metal desk drawer, then follow the numbers on the tag.' },
+      { id: 'hint-3', body: 'The code is the year the archive was rebuilt, but read the digits backward.' },
     ],
   },
   {
@@ -62,9 +61,9 @@ export const DEFAULT_TEMPLATES: RoomTemplate[] = [
     name: 'The Submerged Lab',
     durationSeconds: 45 * 60,
     hints: [
-      { id: 'hint-1', title: 'Power first', body: 'The breaker room controls more than the lights.' },
-      { id: 'hint-2', title: 'Watch the reflections', body: 'The answer is easier to read where the glass is fogged.' },
-      { id: 'hint-3', title: 'Open the hatch', body: 'Use the pressure number, not the valve label.' },
+      { id: 'hint-1', body: 'The breaker room controls more than the lights.' },
+      { id: 'hint-2', body: 'The answer is easier to read where the glass is fogged.' },
+      { id: 'hint-3', body: 'Use the pressure number, not the valve label.' },
     ],
   },
 ];
@@ -171,7 +170,6 @@ function normalizeTemplateHints(input: unknown): Hint[] {
     if (!hint || typeof hint !== 'object') {
       return {
         id: createId('hint'),
-        title: `Hint ${index + 1}`,
         body: 'Add a clue here.',
       };
     }
@@ -179,7 +177,6 @@ function normalizeTemplateHints(input: unknown): Hint[] {
     const raw = hint as Partial<Hint>;
     return {
       id: typeof raw.id === 'string' && raw.id.trim() ? raw.id : createId('hint'),
-      title: typeof raw.title === 'string' && raw.title.trim() ? raw.title : `Hint ${index + 1}`,
       body: typeof raw.body === 'string' && raw.body.trim() ? raw.body : 'Add a clue here.',
     };
   });
@@ -196,7 +193,6 @@ function normalizeHints(input: unknown): Hint[] {
     if (!hint || typeof hint !== 'object') {
       return fallback[index] ?? {
         id: createId('hint'),
-        title: `Hint ${index + 1}`,
         body: 'Add a clue here.',
       };
     }
@@ -204,7 +200,6 @@ function normalizeHints(input: unknown): Hint[] {
     const raw = hint as Partial<Hint>;
     return {
       id: typeof raw.id === 'string' && raw.id.trim() ? raw.id : (fallback[index]?.id ?? createId('hint')),
-      title: typeof raw.title === 'string' && raw.title.trim() ? raw.title : (fallback[index]?.title ?? `Hint ${index + 1}`),
       body: typeof raw.body === 'string' && raw.body.trim() ? raw.body : (fallback[index]?.body ?? 'Add a clue here.'),
     };
   });

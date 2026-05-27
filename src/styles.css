@@ -144,7 +144,7 @@ button {
 }
 
 .template-hint-card {
-  padding: 16px 18px 14px;
+  padding: 22px 22px 20px;
   border-radius: 22px;
   border: 1px solid rgba(255, 255, 255, 0.09);
   background: rgba(255, 255, 255, 0.04);
@@ -153,6 +153,8 @@ button {
 .hint-copy {
   margin: 0;
   color: var(--text-soft);
+  font-size: 1.12rem;
+  line-height: 1.7;
 }
 
 .warning-panel {
@@ -410,7 +412,7 @@ button {
 }
 
 .hint-card {
-  padding: 16px 18px 14px;
+  padding: 20px 20px 18px;
 }
 
 .hint-card--visible {
@@ -435,7 +437,66 @@ button {
 }
 
 .hint-body {
-  min-height: 72px;
+  min-height: 140px;
+  font-size: 1.08rem;
+  line-height: 1.6;
+}
+
+/* Display clues use a more legible font than the operator cards */
+.display-clue-body,
+.display-hint-panel .no-clue {
+  font-family: 'Aptos Display', 'Segoe UI Variable Display', 'Aptos', 'Trebuchet MS', sans-serif;
+  font-weight: 800;
+  letter-spacing: -0.02em;
+  color: #f7f3ea;
+}
+
+.hint-copy,
+.hint-body {
+  font-family: 'Segoe UI', system-ui, -apple-system, 'Helvetica Neue', Arial, sans-serif;
+  color: #f7f3ea;
+}
+
+.display-hint-meta {
+  margin-left: auto;
+  display: flex;
+  align-items: center;
+}
+
+.hints-remaining {
+  font-weight: 700;
+  font-size: 1.7rem;
+  color: var(--accent-strong);
+}
+
+/* Wrapper to place the remaining count above the hint panel */
+.display-hint-wrapper {
+  display: flex;
+  flex-direction: column;
+  align-items: stretch;
+}
+
+.hints-remaining-wrapper {
+  display: flex;
+  justify-content: flex-end;
+  margin-bottom: 8px;
+}
+
+/* Make the displayed clue body larger for visibility */
+.display-hint-panel {
+  padding: 32px;
+}
+
+.display-clue-body {
+  font-size: clamp(3.4rem, 5.8vw, 5.4rem);
+  line-height: 1.04;
+  margin: 10px 0 0 0;
+  text-wrap: balance;
+}
+
+.display-hint-panel .no-clue {
+  color: rgba(243,239,230,0.64);
+  font-size: 1.05rem;
 }
 
 .hint-footer {
@@ -562,11 +623,13 @@ button {
 }
 
 .display-hint-panel {
-  padding: 22px;
+  padding: 28px;
 }
 
 .display-hint-panel p {
   margin-bottom: 0;
+  font-size: clamp(1.5rem, 3vw, 2.7rem);
+  line-height: 1.4;
 }
 
 .display-warning-panel {

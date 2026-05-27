@@ -1,10 +1,52 @@
 import { app, BrowserWindow, ipcMain } from 'electron';
+import Database from 'better-sqlite3';
 import path from 'path';
 import { fileURLToPath } from 'url';
 
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
 const isDev = !app.isPackaged && process.env.NODE_ENV !== 'production';
+const DATABASE_FILE_NAME = 'escape-room-control.sqlite3';
+const TEMPLATE_STORAGE_KEY = 'room_templates';
 let displayWindow = null;
+let database = null;
+
+function getDatabase() {
+  if (database) {
+    return database;
+  }
+
+  const dbPath = path.join(app.getPath('userData'), DATABASE_FILE_NAME);
+  database = new Database(dbPath);
+  database.pragma('journal_mode = WAL');
+  database.exec(`
+    CREATE TABLE IF NOT EXISTS app_state (
+      key TEXT PRIMARY KEY,
+      value TEXT NOT NULL
+    )
+  `);
+
+  return database;
+}
+
+function getStoredJson(key) {
+  const row = getDatabase().prepare('SELECT value FROM app_state WHERE key = ?').get(key);
+
+  if (!row || typeof row.value !== 'string') {
+    return null;
+  }
+
+  try {
+    return JSON.parse(row.value);
+  } catch {
+    return null;
+  }
+}
+
+function setStoredJson(key, value) {
+  getDatabase()
+    .prepare('INSERT INTO app_state (key, value) VALUES (?, ?) ON CONFLICT(key) DO UPDATE SET value = excluded.value')
+    .run(key, JSON.stringify(value));
+}
 
 function getDisplayWindow() {
   if (displayWindow && !displayWindow.isDestroyed()) {
@@ -96,6 +138,13 @@ ipcMain.handle('escape-room:set-display-fullscreen', (_event, nextFullscreen) =>
   const win = createDisplayWindow();
   win.setFullScreen(Boolean(nextFullscreen));
   return win.isFullScreen();
+});
+
+ipcMain.handle('escape-room:load-room-templates', () => getStoredJson(TEMPLATE_STORAGE_KEY));
+
+ipcMain.handle('escape-room:save-room-templates', (_event, templates) => {
+  setStoredJson(TEMPLATE_STORAGE_KEY, templates);
+  return true;
 });
 
 app.whenReady().then(createWindow);

@@ -9,8 +9,8 @@ Compression=lzma
 SolidCompression=yes
 
 [Files]
-; include all files from the production build output
-Source: "{src}\dist\*"; DestDir: "{app}"; Flags: recursesubdirs createallsubdirs
+; include all files from the production build output (relative to project root)
+Source: "dist\*"; DestDir: "{app}"; Flags: recursesubdirs createallsubdirs
 
 [Icons]
 Name: "{group}\Escape Room Control"; Filename: "{app}\index.html"

@@ -520,7 +520,6 @@ function LandingScreen({
                         ...template.hints,
                         {
                           id: createId('hint'),
-                          title: `Hint ${template.hints.length + 1}`,
                           body: 'Add a clue here.',
                         },
                       ],
@@ -537,18 +536,7 @@ function LandingScreen({
                     <div className="hint-card__header">
                       <div>
                         <div className="hint-index">Hint {index + 1}</div>
-                        <input
-                          className="hint-title"
-                          value={hint.title}
-                          onChange={(event) =>
-                            updateSelectedTemplate((template) => ({
-                              ...template,
-                              hints: template.hints.map((entry) =>
-                                entry.id === hint.id ? { ...entry, title: event.target.value } : entry,
-                              ),
-                            }))
-                          }
-                        />
+                        {/* title removed; use body only */}
                       </div>
                       <button
                         className="icon-button"
@@ -638,8 +626,8 @@ function ControlRoom({
   };
 
   const showCustomHint = () => {
-    const title = customTitle.trim();
-    const body = customBody.trim();
+    const title = (customTitle ?? '').trim();
+    const body = (customBody ?? '').trim();
 
     if (!body) {
       return;
@@ -659,7 +647,7 @@ function ControlRoom({
   const showWarning = () => {
     postDisplayMessage({
       type: 'warning',
-      text: warningText.trim(),
+      text: (warningText ?? '').trim(),
     });
   };
 
@@ -789,7 +777,7 @@ function ControlRoom({
                   <div className="hint-card__header">
                     <div>
                       <div className="hint-index">Hint {index + 1}</div>
-                      {hint.title.trim() ? <strong>{hint.title}</strong> : null}
+                      {/* title removed; no heading */}
                     </div>
                     <div className="hint-actions">
                       <button className="icon-button" type="button" onClick={() => toggleConsumeHint(hint.id)}>
@@ -922,7 +910,11 @@ function DisplayScreen({
 }) {
   const remainingLabel = formatClock(state.remainingSeconds);
   const warningActive = temporaryDisplay?.kind === 'warning';
-  const visibleHint = warningActive ? null : temporaryDisplay?.kind === 'custom-hint' ? temporaryDisplay.hint : activeHint;
+  const visibleHintBody = warningActive
+    ? null
+    : temporaryDisplay?.kind === 'custom-hint'
+    ? temporaryDisplay.hint.body
+    : activeHint?.body ?? null;
 
   return (
     <main className={warningActive ? 'display-screen display-screen--warning' : 'display-screen'}>
@@ -944,17 +936,22 @@ function DisplayScreen({
           {state.status === 'completed' ? 'Session complete' : state.status === 'running' ? 'Timer active' : 'Waiting for operator'}
         </div>
 
-        {visibleHint ? (
+        <div className="display-hint-wrapper">
+          <div className="hints-remaining-wrapper">
+            <span className="hints-remaining">{state.hintsRemaining} remaining</span>
+          </div>
+
           <div className="display-hint-panel">
             <div className="panel-header panel-header--compact">
               <div>
-                <span className="eyebrow">Current hint</span>
-                {visibleHint.title.trim() ? <h2>{visibleHint.title}</h2> : null}
+                <span className="eyebrow">Current clue</span>
+                <h2>Clue revealed</h2>
               </div>
             </div>
-            <p>{visibleHint.body}</p>
+
+            {visibleHintBody ? <p className="display-clue-body">{visibleHintBody}</p> : <p className="no-clue">No clue revealed</p>}
           </div>
-        ) : null}
+        </div>
 
         {warningActive ? (
           <div className="display-warning-panel">
